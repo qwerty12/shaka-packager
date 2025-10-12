@@ -293,7 +293,17 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
   next_fragment_start_dts_.resize(track_count, 0);
   for (size_t i = 0; i < moof.tracks.size(); i++) {
     const TrackFragment& traf = moof.tracks[i];
-    const auto track_index = traf.header.track_id - 1;
+    // Better Track Index handler
+    size_t track_index = 0;
+    for (; track_index < moov_->tracks.size(); ++track_index) {
+      if (moov_->tracks[track_index].header.track_id == traf.header.track_id)
+        break;
+    }
+    if (track_index == moov_->tracks.size()) {
+      LOG(ERROR) << "Invalid track_id " << traf.header.track_id
+                 << " not found in moov box.";
+      return false;
+    }
     const Track* trak = NULL;
     for (size_t t = 0; t < moov_->tracks.size(); t++) {
       if (moov_->tracks[t].header.track_id == traf.header.track_id)
