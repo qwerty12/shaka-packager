@@ -300,9 +300,9 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         break;
     }
     if (track_index == moov_->tracks.size()) {
-      LOG(ERROR) << "Invalid track_id " << traf.header.track_id
+      LOG(WARNING) << "Invalid track_id " << traf.header.track_id
                  << " not found in moov box.";
-      return false;
+      track_index = traf.header.track_id - 1;
     }
     const Track* trak = NULL;
     for (size_t t = 0; t < moov_->tracks.size(); t++) {
